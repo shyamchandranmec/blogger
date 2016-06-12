@@ -12,10 +12,13 @@ module.exports = app => {
 
     router.route('/')
         .get((req, res, next) => blogsController.getAllBlogs(req, res, next))
-        .post((req, res, next) => blogsController.addBlog(req, res, next));
+        .post((req, res, next) => blogsController.addBlog(req, res, next))
+
 
     router.route('/:id')
-        .get((req, res, next) => blogsController.findBlog(req, res, next));
+        .get((req, res, next) => blogsController.findBlog(req, res, next))
+        .delete((req, res, next) => blogsController.deleteBlog(req, res, next));
+
 
     router.route("/:id/paragraphs/:paraId/comments")
         .post((req, res, next) => blogsController.addCommentToParagraph(req, res, next));

@@ -14,6 +14,10 @@ module.exports = (app) => {
     }
 
     function getActualPage(page) {
+        let regex = new RegExp("[a-zA-Z]+");
+        if (regex.test(page)) {
+            return 0
+        }
         page = parseInt(page);
         if(isNaN(page)) {
             return 0;
@@ -27,15 +31,20 @@ module.exports = (app) => {
     }
 
     function splitToParagraph(content) {
-        let paragraphs = content.split("\n\n");
         let paraArray = [];
+
+        if(!content) {
+            return paraArray;
+        }
+        content += '';
+        let paragraphs = content.split("\n\n");
         for(let para of paragraphs) {
             paraArray.push({
                 content: para,
                 comments:[]
             })
         };
-        return paraArray
+        return paraArray;
     }
 
     function addBlog(content, title) {
@@ -45,6 +54,10 @@ module.exports = (app) => {
             paragraphs:paragraphs
         };
         return blogModel.addBlog(blogObj);
+    }
+
+    function deleteBlog(id) {
+        return blogModel.deleteBlog(id);
     }
     
     function addCommentToParagraph(blogId, paragraphId, comment) {
@@ -59,6 +72,9 @@ module.exports = (app) => {
         getAllBlogs,
         addBlog,
         findBlog,
-        addCommentToParagraph
+        deleteBlog,
+        addCommentToParagraph,
+        getActualPage,
+        splitToParagraph
     }
 };

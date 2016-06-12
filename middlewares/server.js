@@ -6,8 +6,12 @@
 module.exports = (app) => {
     let logger = app.helpers.logger;
     let appPort = process.env.PORT || "3000";
-    let server = app.listen(appPort, () => {
-        logger.info(`Server started on port ${appPort}`);
-    });
+    let  server  = null;
+
+    if(process.env.NODE_ENV != "test") {
+        let server = app.listen(appPort, () => {
+            logger.info(`Server started on port ${appPort}`);
+        });
+    }
     return server;
 }

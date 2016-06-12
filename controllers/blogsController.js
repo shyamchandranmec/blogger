@@ -29,6 +29,14 @@ module.exports = (app) => {
         })
     }
 
+    function deleteBlog (req, res, next) {
+        return blogService.deleteBlog(req.params.id).then((blog) => {
+            res.json(blog);
+        }).catch((err) => {
+            next(err);
+        })
+    }
+
     function findBlog (req, res, next) {
         return blogService.findBlog(req.params.id).then((blog) => {
             res.json(blog);
@@ -51,6 +59,7 @@ module.exports = (app) => {
         getAllBlogs,
         addBlog,
         findBlog,
+        deleteBlog,
         addCommentToParagraph
     }
 }

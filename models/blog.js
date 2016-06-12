@@ -25,13 +25,13 @@ module.exports = (app) => {
     let BlogModel = mongoose.model("blog", blogSchema);
 
     BlogModel.findBlog = (id) => {
-        logger.info("Finding blog with id ",id);
+        logger.info("Finding blog with id ", id);
         return new Promise((resolve, reject) => {
             BlogModel.findById(id).then((blog) => {
                 logger.info("Blog found - " + blog._id);
                 return resolve(blog.toJSON());
             }).catch((err) => {
-                logger.error("Unable to find blog with id "+id);
+                logger.error("Unable to find blog with id " + id);
                 logger.error(err);
                 let errorObject = errorFormatter.createErrorObject({
                     status: 404,
@@ -44,10 +44,10 @@ module.exports = (app) => {
     }
 
     BlogModel.getAllBlogs = (page) => {
-        logger.info("Finding all blogs page ",page);
+        logger.info("Finding all blogs page ", page);
         let perPage = 5;
         return new Promise((resolve, reject) => {
-            BlogModel.find({},{"paragraphs.comments":0}).limit(perPage).skip(perPage * page).exec().then((blogs) => {
+            BlogModel.find({}, {"paragraphs.comments": 0}).limit(perPage).skip(perPage * page).exec().then((blogs) => {
                 logger.info("Blogs found - " + blogs.length);
                 return resolve(blogs);
             }).catch((err) => {
@@ -81,23 +81,47 @@ module.exports = (app) => {
         })
     };
 
+
+    BlogModel.deleteBlog = (id) => {
+        return new Promise((resolve, reject) => {
+            BlogModel.findOneAndRemove({_id: id}).then((blog) => {
+                logger.info(`Successfully deleted blog with id ${id}`);
+                let result = {};
+                if (blog) {
+                    result = blog.toJSON();
+                }
+
+                return resolve(result);
+            }).catch(err => {
+                logger.error(`Unable to remove blog with id ${id}`);
+                logger.error(err);
+                let errorObject = errorFormatter.createErrorObject({
+                    status: 404,
+                    message: "Unable to remove blog with given id",
+                    details: err.message
+                });
+                return reject(errorObject);
+            });
+        })
+    };
+
     BlogModel.addCommentToParagraph = (blogId, paragraphId, comment) => {
         return new Promise((resolve, reject) => {
             BlogModel.findOneAndUpdate({
                 _id: blogId,
                 "paragraphs._id": paragraphId
-            },{
-                "$push":{"paragraphs.$.comments": comment}
-            },{
+            }, {
+                "$push": {"paragraphs.$.comments": comment}
+            }, {
                 new: true
             }).then((blog) => {
                 logger.info("Blog found - " + blog._id);
                 return resolve(blog.toJSON());
             }).catch((err) => {
-                logger.error("Unable to find blog with id "+id);
+                logger.error("Unable to find blog with id " + blogId);
                 logger.error(err);
                 let errorObject = errorFormatter.createErrorObject({
-                    status: 404,
+                    status: 400,
                     message: "Unable to find blog",
                     details: err.message
                 });
